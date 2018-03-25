@@ -1,0 +1,16 @@
+[MainConfigs]
+turns: 1000                            ; Maximum turns in game
+attack_radius_2: 16                    ; Square of the attack radius (so the radius is square root of the number)
+max_points: 10                         ; The player who reaches this number of points is the winner
+actions_per_turn: 6                    ; Number of actions that can be performed in a single turn
+reload_turns: 30                       ; Number of turns that pirate can't do anything after attack
+spawn_turns: 1                         ; Number of turns that takes pirate to appear in the game again after sinking
+turns_to_sober: 20                     ; Number of turns that takes pirate to be available after being drunk
+max_defense_turns: 3                   ; Number of turns that the pirate is protected from attacks after defense activation
+defense_reload_turns: 60               ; Number of turns that pirate can't do anything after defending
+treasure_spawn_turns: 2000             ; Number of turns for a treasure to respawn after successfully unloaded
+bermuda_zone_radius_2: 25              ; Square of the bermuda zone radius
+bermuda_zone_active_turns: 40          ; Number of turns for bermuda zone to be summoned for
+required_scripts_num: 2                ; Number of needed scripts to activate force field
+cloak_duration: 20					   ; Number of turns that the pirate is cloaked after cloak activation
+cloak_reload_turns: 15				   ; Number of turns for cloaking to reload after use
