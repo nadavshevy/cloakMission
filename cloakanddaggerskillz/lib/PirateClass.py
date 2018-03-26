@@ -47,7 +47,9 @@ class BasePirate(MovableObject.MovableObject):
         """:type : int"""
         self.turns_to_sober = 0
         """:type : int"""
-
+        # the amount of turns until left for cloak
+        self.cloak_turns = 0
+        """:type : int"""
         self.treasure = None
         """:type : pirates.Treasure | pythonRunner.Treasure"""
         # powerups
