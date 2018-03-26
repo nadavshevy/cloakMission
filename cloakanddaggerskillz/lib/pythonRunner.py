@@ -50,6 +50,7 @@ def parse_data(data_str):
     """
     This turns the received data into a dictionary or list using json.
     --Warning--
+    --Warning--
     Tuples will be turned into lists in the json data.
 
     :param data_str: The input data to un format.
@@ -120,6 +121,16 @@ class Pirates(object):
         """:type : list[Treasure]"""
         self.all_pirates = []
         """:type : list[Pirate]"""
+
+        # cloak
+        self.cloak_reload_turns = 0
+        """:type : int"""
+        self.cloak_duration = 0
+        """:type : int"""
+        self.my_turns_to_cloak = 0
+        """:type : int"""
+        self.enemy_turns_to_cloak = 0
+        """:type : int"""
 
         # attack and defense settings
         self.attack_radius2 = 0
@@ -775,6 +786,16 @@ class Pirates(object):
         :type pirate: Pirate
         """
         self._orders.append({'type': 'order', 'order_type': 'defense', 'acting_pirate': pirate.id,
+                            'order_args': {}})
+
+    def cloak(self, pirate):
+        """
+        Orders a given pirate to cloak itself.
+
+        :param pirate: the pirate that will cloak
+        :type pirate: Pirate
+        """
+        self._orders.append({'type': 'order', 'order_type': 'cloak', 'acting_pirate': pirate.id,
                             'order_args': {}})
 
     ''' Primary helper API '''
