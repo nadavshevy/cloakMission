@@ -790,6 +790,21 @@ class PiratesGame(Game):
             counter_dict['acting_pirates'].add(pirate)
             return
 
+        # validate that pirate cannot cloak itself while in cloak or when player cloaked in this turn
+        elif order['order_type'] == 'cloak':
+            if pirate.cloak_turns > 0:
+                raise IgnoredOrderException('cloak ignored - pirate is already invisible', order)
+
+            if len(order['order_args']) > 0:
+                raise InvalidOrderException('invalid args', order)
+
+            if counter_dict['cloaked_this_turn']:
+                raise InvalidOrderException('pirate already cloaked this turn', order)
+
+            counter_dict['cloaked_this_turn'] = True
+            counter_dict['acting_pirates'].add(pirate)
+            return
+
         elif order['order_type'] == 'bermuda':
             if self.initial_location_in_circle(pirate.location, player_id):
                 raise IgnoredOrderException('bermuda zone cannot overlap enemy initial locations', order)
@@ -975,6 +990,10 @@ class PiratesGame(Game):
                 # pirate is defending this turn
                 pirate.defense_expiration_turns = pirate.max_defense_turns
                 direction = 'd'
+            elif order_type == 'cloak':
+                # pirate is going invisible this turn
+                pirate.cloak_turns = self.cloak_duration
+                direction = 'c'
             elif order_type == 'bermuda':
                 self.summon_bermuda_zone(pirate)
                 direction = 'f'
@@ -1022,6 +1041,15 @@ class PiratesGame(Game):
             # count defense expiration
             if pirate.defense_expiration_turns > 0:
                 pirate.defense_expiration_turns -= 1
+
+    def do_cloak(self):
+        """
+        Handles the cloak logic
+
+        """
+        for pirate in self.living_pirates:
+            if pirate.cloak_turns > 0:
+                pirate.cloak_turns -= 1
 
     def do_bermuda_effect(self):
         """
@@ -1497,6 +1525,7 @@ class PiratesGame(Game):
         self.do_sober()  # handles drunk history and removes drunk pirates who are sober
         self.do_attack()  # handles attacking pirates
         self.do_defense()  # handles defending pirates
+        self.do_cloak()  # handles cloaking pirates
         self.do_bermuda_effect()  # kills all pirates in bermuda zone if they do not belong to the player who summoned
         #  it, and updates bermuda zone counter
         self.do_treasures()  # handles treasure - collecting and unloading
@@ -1554,6 +1583,7 @@ class PiratesGame(Game):
                   'cols': self.width,
                   'max_turns': self.max_turns,
                   'attack_radius2': self.attack_radius,
+                  'cloak_duration': self.cloak_duration,
                   'bermuda_zone_active_turns': self.bermuda_zone_active_turns,
                   'required_scripts_num': self.required_scripts_num,
                   'player_seed': self.player_seed,
@@ -1636,7 +1666,8 @@ class PiratesGame(Game):
         ignored = []
         """:type : list[(dict[str, any], str]]"""
         # dictionary for passing arguments between this function and its sub-functions
-        counter_dict = {'acting_pirates': set(), 'action_counter': 0, 'bermuda_summoned_this_turn': False}
+        counter_dict = {'acting_pirates': set(), 'action_counter': 0,
+                        'bermuda_summoned_this_turn': False, 'cloaked_this_turn': False}
 
         # list of ids of pirates who already acted twice, it's role is to prevent going over all of the orders
         # of a player whenever a PirateAlreadyActed exception is raised
